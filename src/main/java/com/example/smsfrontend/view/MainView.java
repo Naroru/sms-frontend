@@ -1,8 +1,8 @@
-package com.example.mssfrontend.view;
+package com.example.smsfrontend.view;
 
-import com.example.mssfrontend.model.employee.component.CustomerEditor;
-import com.example.mssfrontend.proxy.segment.SegmentAdapter;
-import com.example.mssfrontend.proxy.segment.SegmentDto;
+import com.example.smsfrontend.model.employee.component.CustomerEditor;
+import com.example.smsfrontend.proxy.segment.Segment;
+import com.example.smsfrontend.proxy.segment.SegmentAdapter;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -21,36 +21,27 @@ public class MainView extends VerticalLayout {
 
   private final SegmentAdapter adapter;
 
-  private final CustomerEditor editor;
-
   private final TextField filter = new TextField("");
   private final Button addNewButton = new Button("Add new segment", VaadinIcon.PLUS.create());
-  private final Grid<SegmentDto> grid = new Grid<>(SegmentDto.class);
-  private final HorizontalLayout toolbar = new HorizontalLayout(filter, addNewButton); //можно создать в методе и получить значение в конструкторе, а не объвлять в классе
+  private final Grid<Segment> grid = new Grid<>(Segment.class);
 
   public MainView(SegmentAdapter adapter, CustomerEditor editor) {
 
-    this.adapter = adapter;
-    this.editor = editor;
+    add(new Button("Click me 4", e -> Notification.show("Hello, Spring+Vaadin user!")));
 
+    this.adapter = adapter;
+    /*    this.editor = editor;*/
 
     setClassName("main-view"); //создает css класс, в котором можно будет настраивать стили
 
-    setSizeFull();// по умолчанию вертикальный слой занимает столько места, сколько его элементы. А нам нужно чтобы он был на весь экран. Но т.к. Таблица (Grid) по ширине на весь экран то все оК
+    // по умолчанию вертикальный слой занимает столько места, сколько его элементы. А нам нужно чтобы он был на весь экран. Но т.к. Таблица (Grid) по ширине на весь экран то все оК
     //однако по длина таблица может быть не весь экран. ЧТобы таб была весь экран - тут ставим     setSizeFull() а в таблице grid.setHeightFull();
-
-    add(new Button("Click me 4", e -> Notification.show("Hello, Spring+Vaadin user!")));
-
-
-    //grid.setWidth("500px");
-    //grid.setHeight("300px");
+    setSizeFull();
     grid.setHeightFull(); //будет занимать всю длину родительского элемента, т.е. формачким
 
-
-    // grid.setColumns("id", "firstName", "lastName");
     grid.getColumnByKey("id").setWidth("100px").setFlexGrow(0);  //запрещаем колонке в таблице динамически расширяться. Например если экранного пространства станет больше
 
-    //  grid.setColumns("id", "firstName", "lastName", "status"); //по умолчанию таблица показывает все колонки из энтити. Тут можно настроить, чтобы не все, а определенные
+    // grid.setColumns("id", "firstName", "lastName", "status"); //по умолчанию таблица показывает все колонки из энтити. Тут можно настроить, чтобы не все, а определенные
     //при этом, для данных колонок будет выводиться строковое представление. Если у нас есть колонка, содержащая другой объект, то наверно строковое представление toString будет нехорошо
     //поэтому можно конкретно задать, что там показывать
     //grid.addColumn(customer -> customer.getCompany().getName()).setHeader("Организация"));
@@ -69,6 +60,8 @@ public class MainView extends VerticalLayout {
     // Instantiate and edit new Customer the new button is clicked
     // addNewButton.addClickListener(e -> editor.editCustomer(new Customer()));
 
+    //можно создать в методе и получить значение в конструкторе, а не объвлять в классе
+    HorizontalLayout toolbar = new HorizontalLayout(filter, addNewButton);
     add(toolbar, grid, editor);
 
 

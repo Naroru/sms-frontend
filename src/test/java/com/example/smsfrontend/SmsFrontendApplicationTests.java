@@ -1,7 +1,7 @@
-package com.example.mssfrontend;
+package com.example.smsfrontend;
 
-import com.example.mssfrontend.proxy.segment.SegmentAdapter;
-import com.example.mssfrontend.proxy.segment.SegmentDto;
+import com.example.smsfrontend.proxy.segment.Segment;
+import com.example.smsfrontend.proxy.segment.SegmentAdapter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,8 +17,8 @@ class SmsFrontendApplicationTests {
   @Test
   void contextLoads() {
 
-    List<SegmentDto> segmentDtoList = segmentAdapter.findAll();
-    System.out.println(segmentDtoList);
+    List<Segment> segmentList = segmentAdapter.findAll();
+    System.out.println(segmentList);
   }
 
 }

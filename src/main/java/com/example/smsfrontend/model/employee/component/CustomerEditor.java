@@ -1,4 +1,4 @@
-package com.example.mssfrontend.model.employee.component;
+package com.example.smsfrontend.model.employee.component;
 
 
 import com.vaadin.flow.component.KeyNotifier;

@@ -1,6 +1,5 @@
-import { injectGlobalWebcomponentCss } from 'Frontend/generated/jar-resources/theme-util.js';
-
 import '@vaadin/polymer-legacy-adapter/style-modules.js';
+import '@vaadin/form-layout/src/vaadin-form-layout.js';
 import '@vaadin/vertical-layout/src/vaadin-vertical-layout.js';
 import '@vaadin/field-highlighter/src/vaadin-field-highlighter.js';
 import '@vaadin/common-frontend/ConnectionIndicator.js';
@@ -30,7 +29,6 @@ import '@vaadin/time-picker/src/vaadin-time-picker.js';
 import 'Frontend/generated/jar-resources/vaadin-time-picker/timepickerConnector.js';
 import '@vaadin/dialog/src/vaadin-dialog.js';
 import 'Frontend/generated/jar-resources/dndConnector.js';
-import '@vaadin/form-layout/src/vaadin-form-layout.js';
 import '@vaadin/form-layout/src/vaadin-form-item.js';
 import '@vaadin/grid/src/vaadin-grid-column-group.js';
 import '@vaadin/grid/src/vaadin-grid.js';
@@ -85,6 +83,7 @@ import '@vaadin/vaadin-lumo-styles/sizing.js';
 import '@vaadin/vaadin-lumo-styles/spacing.js';
 import '@vaadin/vaadin-lumo-styles/style.js';
 import '@vaadin/vaadin-lumo-styles/vaadin-iconset.js';
+
 const loadOnDemand = (key) => { return Promise.resolve(0); }
 window.Vaadin = window.Vaadin || {};
 window.Vaadin.Flow = window.Vaadin.Flow || {};

@@ -1,17 +1,5 @@
 vaadin:
   launch-browser: true
-
 spring:
   application:
-    name: mss-frontend
-  datasource:
-    url: jdbc:postgresql://localhost:5432/mss_frontend
-    username: admin
-    password: password
-
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
+    name: sms-frontend

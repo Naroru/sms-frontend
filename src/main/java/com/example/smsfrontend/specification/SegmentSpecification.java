@@ -12,20 +12,16 @@ public class SegmentSpecification implements Specification<Segment> {
     private SearchCriteria criteria;
 
     @Override
+    @SuppressWarnings({"unchecked,rawtypes"})
     public Predicate toPredicate(Root<Segment> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        return null;
+
+        return switch (criteria.getOperation()) {
+            case "<" -> criteriaBuilder.lessThan(root.get(criteria.getKey()), (Comparable) criteria.getValue());
+            case ">" -> criteriaBuilder.greaterThan(root.get(criteria.getKey()), (Comparable) criteria.getValue().toString());
+            case "=" -> criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue());
+            default -> null;
+        };
+
+
     }
-/*
-    @Override
-    public Predicate toPredicate(Root<Segment> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-
-        switch (criteria.getOperation()){
-            case "<":
-                return criteriaBuilder.lessThan(root.get(criteria.getKey()),criteria.getValue().toString());
-
-
-        }
-
-
-    }*/
 }

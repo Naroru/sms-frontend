@@ -66,7 +66,6 @@ public class SegmentList extends VerticalLayout  implements KeyNotifier {
       });
 
     editorByInterfaces.addCloseEventHandler(this::closeEditor);
-
     closeEditor();
   }
 

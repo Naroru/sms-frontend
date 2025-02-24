@@ -3,3 +3,6 @@ vaadin:
 spring:
   application:
     name: sms-frontend
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

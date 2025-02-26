@@ -1,29 +1,42 @@
 package com.example.smsfrontend.view.segment;
 
+import com.example.smsfrontend.common.searchcriteria.SearchCriteria;
+import com.example.smsfrontend.common.searchcriteria.SearchCriteriaOperation;
 import com.example.smsfrontend.proxy.segment.Segment;
 import com.example.smsfrontend.proxy.segment.SegmentAdapter;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import com.vaadin.flow.theme.lumo.LumoIcon;
+
+import java.util.List;
+import java.util.Objects;
+
+import static com.vaadin.flow.data.provider.SortDirection.ASCENDING;
 
 @Route("/segments")
 @PageTitle("Сегменты")
 @UIScope
 @SpringComponent
-public class SegmentList extends VerticalLayout  implements KeyNotifier {
+public class SegmentList extends VerticalLayout implements KeyNotifier {
 
-  private final Grid<Segment> grid = new Grid<>(Segment.class);
+  private final Grid<Segment> grid = new Grid<>(Segment.class, false);
   private final TextField filterName = new TextField("Наименование");
-  private final TextField filterCode = new TextField("Код");
+  private final TextField filterId = new TextField("Код");
   private final Text header = new Text("Сегменты");
   private final SegmentAdapter adapter;
   private final SegmentEditorByInterfaces editorByInterfaces;
@@ -39,18 +52,30 @@ public class SegmentList extends VerticalLayout  implements KeyNotifier {
     configureGrid();
     configureEditor();
 
+    addKeyPressListener(Key.DELETE, event -> {
+      Segment segment = grid.asSingleSelect().getValue();
+      if (Objects.nonNull(segment))
+        adapter.setDeleted(segment.getId());
+      updateList();
+    });
+
     updateList();
-    add(header, getFilterToolbar(), grid, editorByEvents,editorByInterfaces);
+    add(header, getFilterToolbar(), grid, editorByEvents, editorByInterfaces);
   }
 
   private void configureGrid() {
-    grid.getColumnByKey("id").setHeader("Код");
-    grid.getColumnByKey("name").setHeader("Наименование");
-    grid.getColumnByKey("id").setWidth("10%").setFlexGrow(0);
+
+    grid.addColumn(createDeleteComponentRenderer()).setWidth("3em").setFlexGrow(0).setKey("isDeleted");
+    grid.addColumn(Segment::getId).setHeader("Код").setWidth("10%").setFlexGrow(0).setKey("code");
+    grid.addColumn(Segment::getName).setHeader("Наименование").setKey("name");
+
+    grid.sort(List.of(new GridSortOrder<>(grid.getColumnByKey("code"), ASCENDING)));
+
     grid.addItemDoubleClickListener(event -> {
       editorByEvents.editSegment(event.getItem());
       editorByInterfaces.editSegment(event.getItem());
     });
+
   }
 
   private void configureEditor() {
@@ -61,9 +86,9 @@ public class SegmentList extends VerticalLayout  implements KeyNotifier {
     editorByEvents.addCloseListener(e -> closeEditor());
 
     editorByInterfaces.addSaveEventHandler(() -> {
-        updateList();
-        closeEditor();
-      });
+      updateList();
+      closeEditor();
+    });
 
     editorByInterfaces.addCloseEventHandler(this::closeEditor);
     closeEditor();
@@ -75,13 +100,30 @@ public class SegmentList extends VerticalLayout  implements KeyNotifier {
     closeEditor();
   }
 
+  private ComponentRenderer<Div, Segment> createDeleteComponentRenderer() {
+    return new ComponentRenderer<>(Div::new, (div, segment) -> {
+      if (segment.isDeleted()) {
+        div.add(new Icon("lumo", "cross"));
+      } else {
+        div.add(LumoIcon.CHECKMARK.create());
+      }
+    });
+  }
+
   private void updateList() {
 
-    if (filterName.getValue().isBlank())
-      //todo реализовать вывод через grid.setItems(VaadinSpringDataHelpers.fromPagingRepository(adapter));
+    SearchCriteria searchCriteria = new SearchCriteria();
+    //todo реализовать вывод через grid.setItems(VaadinSpringDataHelpers.fromPagingRepository(adapter)); Или пагинацию
+
+    if (!filterName.getValue().isEmpty())
+      searchCriteria.addCriteria("name", filterName.getValue(), SearchCriteriaOperation.LIKE);
+    if (!filterId.getValue().isEmpty())
+      searchCriteria.addCriteria("id", filterId.getValue(), SearchCriteriaOperation.EQUALS);
+
+    if (searchCriteria.getCriteriaPositions().isEmpty())
       grid.setItems(adapter.findAll());
     else
-      grid.setItems(adapter.findByName(filterName.getValue()));
+      grid.setItems(adapter.findBySpec(searchCriteria));
   }
 
   private Component getFilterToolbar() {
@@ -90,13 +132,13 @@ public class SegmentList extends VerticalLayout  implements KeyNotifier {
     filterName.setClearButtonVisible(true);
     filterName.addValueChangeListener(event -> updateList());
 
-    filterCode.setValueChangeMode(ValueChangeMode.LAZY);
-    filterCode.setHelperText("");
-    filterCode.setClearButtonVisible(true);
-    filterCode.addValueChangeListener(event -> updateList());
+    filterId.setValueChangeMode(ValueChangeMode.LAZY);
+    filterId.setHelperText("");
+    filterId.setClearButtonVisible(true);
+    filterId.addValueChangeListener(event -> updateList());
 
     FormLayout formLayout = new FormLayout();
-    formLayout.add(filterName, filterCode);
+    formLayout.add(filterName, filterId);
 
     return formLayout;
 

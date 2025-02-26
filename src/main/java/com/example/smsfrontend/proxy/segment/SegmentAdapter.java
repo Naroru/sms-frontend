@@ -1,5 +1,6 @@
 package com.example.smsfrontend.proxy.segment;
 
+import com.example.smsfrontend.common.searchcriteria.SearchCriteria;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +15,8 @@ public interface SegmentAdapter {
   @GetMapping("{id}")
   Segment findById(@PathVariable("id") Long id);
 
-  @GetMapping("/listByName")
-  List<Segment> findByName(@RequestParam("name") String name);
+  @PostMapping("/spec")
+  List<Segment> findBySpec(@RequestBody SearchCriteria searchCriteria);
 
   @PostMapping
   Segment save(@RequestBody Segment segment);
